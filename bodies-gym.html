@@ -1,0 +1,1162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bodies World of Fitness</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cormorant+Garamond:wght@300;400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #C9A84C;
+    --gold-light: #E5C97A;
+    --black: #050505;
+    --dark: #0D0D0D;
+    --dark2: #141414;
+    --gray: #1C1C1C;
+    --text: #E8E0D0;
+    --muted: #7A7260;
+  }
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--black);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* Custom Cursor */
+  .cursor {
+    width: 10px; height: 10px;
+    background: var(--gold);
+    border-radius: 50%;
+    position: fixed; top: 0; left: 0;
+    pointer-events: none;
+    z-index: 9999;
+    transition: transform 0.15s ease;
+    mix-blend-mode: difference;
+  }
+  .cursor-ring {
+    width: 36px; height: 36px;
+    border: 1px solid rgba(201,168,76,0.5);
+    border-radius: 50%;
+    position: fixed; top: 0; left: 0;
+    pointer-events: none;
+    z-index: 9998;
+    transition: transform 0.4s cubic-bezier(.25,.46,.45,.94);
+  }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 28px 60px;
+    background: linear-gradient(to bottom, rgba(5,5,5,0.98), transparent);
+  }
+  .nav-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.5rem;
+    letter-spacing: 0.15em;
+    color: var(--gold);
+    text-decoration: none;
+  }
+  .nav-logo span { color: var(--text); }
+  .nav-links { display: flex; gap: 40px; list-style: none; }
+  .nav-links a {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.3s;
+  }
+  .nav-links a:hover { color: var(--gold); }
+  .nav-cta {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--black);
+    background: var(--gold);
+    padding: 12px 28px;
+    text-decoration: none;
+    transition: background 0.3s, transform 0.3s;
+    clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+  }
+  .nav-cta:hover { background: var(--gold-light); transform: translateY(-1px); }
+
+  /* HERO */
+  .hero {
+    min-height: 100svh;
+    position: relative;
+    display: flex; align-items: flex-end;
+    padding: 0 60px 10px;
+    overflow: hidden;
+  }
+  .hero-bg {
+    position: absolute; inset: 0;
+    background:
+      linear-gradient(135deg, rgba(201,168,76,0.06) 0%, transparent 50%),
+      linear-gradient(to top, rgba(5,5,5,1) 0%, rgba(5,5,5,0.3) 60%, rgba(5,5,5,0.7) 100%);
+    z-index: 1;
+  }
+  .hero-grid {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(201,168,76,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(201,168,76,0.04) 1px, transparent 1px);
+    background-size: 80px 80px;
+    z-index: 0;
+  }
+  .hero-noise {
+    position: absolute; inset: 0; z-index: 2;
+    opacity: 0.03;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  }
+
+  .hero-visual {
+    position: absolute; right: -20px; top: 0; bottom: 0;
+    width: 55%;
+    display: flex; align-items: center; justify-content: center;
+    z-index: 1;
+    overflow: hidden;
+  }
+  .hero-visual::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(to right, var(--black) 0%, transparent 30%, transparent 70%, rgba(5,5,5,0.4) 100%);
+  }
+
+  /* Animated dumbbell graphic */
+  .dumbbell-scene {
+    width: 600px; height: 600px;
+    position: relative;
+    animation: float 6s ease-in-out infinite;
+  }
+  @keyframes float {
+    0%,100% { transform: translateY(0px) rotate(-2deg); }
+    50% { transform: translateY(-20px) rotate(2deg); }
+  }
+  .dumbbell-scene svg { width: 100%; height: 100%; }
+
+  .hero-accent-line {
+    position: absolute; left: 60px; top: 50%;
+    width: 1px; height: 120px;
+    background: linear-gradient(to bottom, transparent, var(--gold), transparent);
+    transform: translateY(-50%);
+    animation: pulse-line 3s ease-in-out infinite;
+  }
+  @keyframes pulse-line {
+    0%,100% { opacity: 0.4; }
+    50% { opacity: 1; }
+  }
+
+  .hero-content { position: relative; z-index: 3; max-width: 700px; }
+  .hero-eyebrow {
+    font-size: 0.65rem; letter-spacing: 0.4em; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 24px;
+    display: flex; align-items: center; gap: 16px;
+  }
+  .hero-eyebrow::before {
+    content: ''; width: 40px; height: 1px; background: var(--gold);
+  }
+  .hero-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(3.5rem, 7vw, 7.5rem);
+    line-height: 1.05;
+    letter-spacing: 0.02em;
+    color: var(--text);
+    margin-bottom: 32px;
+    overflow: visible;
+  }
+  .hero-title .gold { color: var(--gold); display: block; }
+  .hero-sub {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.2rem;
+    color: var(--muted);
+    line-height: 1.7;
+    max-width: 440px;
+    margin-bottom: 48px;
+  }
+  .hero-actions { display: flex; gap: 20px; align-items: center; }
+  .btn-primary {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.72rem; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--black); background: var(--gold);
+    padding: 18px 40px; text-decoration: none;
+    transition: all 0.3s; position: relative;
+    clip-path: polygon(12px 0%, 100% 0%, calc(100% - 12px) 100%, 0% 100%);
+  }
+  .btn-primary:hover { background: var(--gold-light); transform: translateY(-2px); }
+  .btn-secondary {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.72rem; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--gold); text-decoration: none;
+    display: flex; align-items: center; gap: 10px;
+    transition: gap 0.3s;
+  }
+  .btn-secondary:hover { gap: 16px; }
+  .btn-secondary .arr { font-size: 1.2rem; }
+
+  .hero-stats {
+    position: absolute; right: 60px; bottom: 80px; z-index: 3;
+    display: flex; gap: 50px;
+  }
+  .stat { text-align: right; }
+  .stat-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 3.5rem; line-height: 1;
+    color: var(--gold);
+    letter-spacing: 0.05em;
+  }
+  .stat-label {
+    font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  /* MARQUEE */
+  .marquee-section {
+    padding: 20px 0;
+    background: var(--gold);
+    overflow: hidden;
+    position: relative;
+  }
+  .marquee-track {
+    display: flex; gap: 0;
+    animation: marquee 25s linear infinite;
+    white-space: nowrap;
+  }
+  .marquee-item {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.1rem; letter-spacing: 0.3em;
+    color: var(--black);
+    padding: 0 40px;
+    display: flex; align-items: center; gap: 40px;
+  }
+  .marquee-dot { width: 6px; height: 6px; background: var(--black); border-radius: 50%; }
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+
+  /* SECTION BASE */
+  section { padding: 120px 60px; }
+
+  .section-label {
+    font-size: 0.62rem; letter-spacing: 0.4em; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 20px;
+    display: flex; align-items: center; gap: 16px;
+  }
+  .section-label::after { content: ''; flex: 1; max-width: 60px; height: 1px; background: var(--gold); }
+
+  .section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(3rem, 6vw, 6rem);
+    line-height: 0.95; letter-spacing: 0.02em;
+    color: var(--text);
+  }
+
+  /* ABOUT */
+  .about { background: var(--dark); display: grid; grid-template-columns: 1fr 1fr; gap: 100px; align-items: center; }
+  .about-visual {
+    position: relative; aspect-ratio: 3/4;
+    background: var(--gray);
+    overflow: hidden;
+  }
+  .about-visual::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(201,168,76,0.15) 0%, transparent 60%);
+  }
+  .about-visual-inner {
+    width: 100%; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 8rem; color: rgba(201,168,76,0.08);
+    letter-spacing: -0.05em;
+    flex-direction: column;
+  }
+  .about-badge {
+    position: absolute; bottom: -20px; right: -20px;
+    width: 140px; height: 140px;
+    background: var(--gold);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    flex-direction: column;
+    text-align: center;
+  }
+  .about-badge-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2.5rem; color: var(--black); line-height: 1;
+  }
+  .about-badge-text {
+    font-size: 0.6rem; letter-spacing: 0.15em; text-transform: uppercase;
+    color: rgba(0,0,0,0.7); line-height: 1.3; padding: 0 10px;
+  }
+  .about-content { padding: 20px 0; }
+  .about-content .section-title { margin-bottom: 30px; }
+  .about-desc {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.15rem; color: var(--muted); line-height: 1.9;
+    margin-bottom: 50px;
+  }
+  .about-features { display: flex; flex-direction: column; gap: 24px; }
+  .feature-row {
+    display: flex; align-items: center; gap: 20px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid rgba(201,168,76,0.1);
+  }
+  .feature-row:last-child { border-bottom: none; }
+  .feature-icon {
+    width: 44px; height: 44px; flex-shrink: 0;
+    border: 1px solid rgba(201,168,76,0.3);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.2rem;
+    clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%);
+    background: rgba(201,168,76,0.05);
+  }
+  .feature-text strong {
+    display: block;
+    font-family: 'DM Sans', sans-serif; font-size: 0.85rem; font-weight: 500;
+    color: var(--text); margin-bottom: 4px; letter-spacing: 0.05em;
+  }
+  .feature-text span {
+    font-size: 0.78rem; color: var(--muted);
+  }
+
+  /* SERVICES */
+  .services { background: var(--black); }
+  .services-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 70px; }
+  .services-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; }
+  .service-card {
+    background: var(--dark2);
+    padding: 50px 40px;
+    position: relative; overflow: hidden;
+    transition: background 0.4s;
+    border-top: 1px solid rgba(201,168,76,0.08);
+  }
+  .service-card:hover { background: var(--gray); }
+  .service-card::before {
+    content: '';
+    position: absolute; left: 0; top: 0; bottom: 0; width: 0;
+    background: var(--gold);
+    transition: width 0.4s cubic-bezier(.25,.46,.45,.94);
+  }
+  .service-card:hover::before { width: 2px; }
+  .service-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 5rem; color: rgba(201,168,76,0.05);
+    line-height: 1; position: absolute; right: 30px; top: 20px;
+    transition: color 0.4s;
+  }
+  .service-card:hover .service-num { color: rgba(201,168,76,0.12); }
+  .service-icon { font-size: 2rem; margin-bottom: 24px; }
+  .service-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.8rem; letter-spacing: 0.05em;
+    color: var(--text); margin-bottom: 14px;
+    transition: color 0.3s;
+  }
+  .service-card:hover .service-name { color: var(--gold); }
+  .service-desc { font-size: 0.82rem; color: var(--muted); line-height: 1.8; }
+
+  /* HOURS & INFO */
+  .info-section {
+    background: var(--dark);
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 0;
+  }
+  .info-half { padding: 100px 80px; }
+  .info-half:first-child { border-right: 1px solid rgba(201,168,76,0.1); }
+  .hours-list { margin-top: 50px; }
+  .hour-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 18px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+  .hour-day { font-size: 0.8rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); }
+  .hour-time { font-family: 'Cormorant Garamond', serif; font-size: 1.1rem; color: var(--text); }
+  .hour-row.today .hour-day { color: var(--gold); }
+  .hour-row.today .hour-time { color: var(--gold); }
+  .open-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    margin-top: 30px;
+    padding: 10px 20px;
+    border: 1px solid rgba(74,222,128,0.3);
+    background: rgba(74,222,128,0.06);
+  }
+  .open-dot { width: 7px; height: 7px; background: #4ADE80; border-radius: 50%; animation: blink 2s ease-in-out infinite; }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+  .open-text { font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase; color: #4ADE80; }
+
+  .contact-items { margin-top: 50px; display: flex; flex-direction: column; gap: 32px; }
+  .contact-item { display: flex; gap: 20px; align-items: flex-start; }
+  .contact-item-icon {
+    width: 44px; height: 44px; flex-shrink: 0;
+    background: rgba(201,168,76,0.08);
+    border: 1px solid rgba(201,168,76,0.2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem;
+  }
+  .contact-item-label { font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+  .contact-item-value { font-family: 'Cormorant Garamond', serif; font-size: 1.1rem; color: var(--text); }
+  .contact-item-value a { color: inherit; text-decoration: none; }
+  .contact-item-value a:hover { color: var(--gold); }
+
+  /* REVIEWS */
+  .reviews { background: var(--black); }
+  .reviews-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 70px; }
+  .rating-display { text-align: right; }
+  .rating-big {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 6rem; line-height: 1; color: var(--gold); letter-spacing: 0.05em;
+  }
+  .rating-stars { font-size: 1.2rem; margin-bottom: 6px; letter-spacing: 4px; }
+  .rating-count { font-size: 0.72rem; color: var(--muted); letter-spacing: 0.15em; text-transform: uppercase; }
+  .reviews-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; }
+  .review-card {
+    background: var(--dark2);
+    padding: 45px 40px;
+    position: relative; border-top: 2px solid transparent;
+    transition: border-color 0.3s;
+  }
+  .review-card:hover { border-top-color: var(--gold); }
+  .review-quote {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 5rem; color: rgba(201,168,76,0.08);
+    line-height: 0.8; margin-bottom: 10px;
+  }
+  .review-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.05rem; color: var(--muted); line-height: 1.8;
+    margin-bottom: 30px;
+  }
+  .review-footer { display: flex; align-items: center; justify-content: space-between; }
+  .reviewer-name { font-size: 0.8rem; font-weight: 500; color: var(--text); letter-spacing: 0.08em; }
+  .reviewer-stars { color: var(--gold); font-size: 0.75rem; letter-spacing: 3px; }
+
+  /* MAP CTA */
+  .map-section {
+    background: var(--dark);
+    display: grid; grid-template-columns: 1fr 1fr;
+    min-height: 500px;
+  }
+  .map-content {
+    padding: 100px 80px;
+    display: flex; flex-direction: column; justify-content: center;
+  }
+  .map-content .section-title { margin-bottom: 20px; }
+  .map-address {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.1rem; color: var(--muted); line-height: 1.8;
+    margin-bottom: 40px;
+  }
+  .map-frame {
+    position: relative; overflow: hidden;
+    background: var(--gray);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .map-frame iframe { width: 100%; height: 100%; border: none; filter: grayscale(80%) contrast(1.1) brightness(0.7); }
+  .map-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(to right, rgba(13,13,13,0.6), transparent);
+    pointer-events: none;
+  }
+
+  /* FOOTER */
+  footer {
+    background: var(--black);
+    border-top: 1px solid rgba(201,168,76,0.1);
+    padding: 60px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .footer-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.8rem; letter-spacing: 0.1em; color: var(--gold);
+  }
+  .footer-logo span { color: rgba(255,255,255,0.3); }
+  .footer-copy { font-size: 0.7rem; color: var(--muted); letter-spacing: 0.15em; text-transform: uppercase; }
+  .footer-social { display: flex; gap: 20px; }
+  .social-link {
+    width: 40px; height: 40px;
+    border: 1px solid rgba(201,168,76,0.2);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--muted); text-decoration: none; font-size: 0.85rem;
+    transition: all 0.3s;
+  }
+  .social-link:hover { border-color: var(--gold); color: var(--gold); background: rgba(201,168,76,0.05); }
+
+  /* ANIMATIONS */
+  .reveal {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 0.8s cubic-bezier(.25,.46,.45,.94), transform 0.8s cubic-bezier(.25,.46,.45,.94);
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+  .reveal-delay-1 { transition-delay: 0.15s; }
+  .reveal-delay-2 { transition-delay: 0.3s; }
+  .reveal-delay-3 { transition-delay: 0.45s; }
+
+  @media (max-width: 900px) {
+
+/* GENERAL */
+body {
+  cursor: auto;
+}
+
+.cursor,
+.cursor-ring {
+  display: none;
+}
+
+nav {
+  padding: 18px 20px;
+  backdrop-filter: blur(12px);
+}
+
+.nav-links {
+  display: none;
+}
+
+.nav-cta {
+  padding: 10px 18px;
+  font-size: 0.6rem;
+}
+
+/* HERO FIX */
+.hero {
+  min-height: auto;
+  height: auto;
+  padding: 120px 20px 50px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+
+.hero-content {
+  max-width: 100%;
+}
+
+.hero-title {
+  font-size: clamp(3rem, 14vw, 5rem);
+  line-height: 0.95;
+  margin-bottom: 20px;
+}
+
+.hero-sub {
+  font-size: 1rem;
+  line-height: 1.6;
+  max-width: 100%;
+  margin-bottom: 32px;
+}
+
+.hero-actions {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 18px;
+  width: 100%;
+}
+
+.btn-primary,
+.btn-secondary {
+  width: 100%;
+  justify-content: center;
+  text-align: center;
+}
+
+/* REMOVE VISUAL COLLISION */
+.hero-visual {
+  position: relative;
+  width: 100%;
+  height: 260px;
+  right: auto;
+  top: auto;
+  bottom: auto;
+  margin-top: 40px;
+  display: flex;
+}
+
+.dumbbell-scene {
+  width: 100%;
+  max-width: 320px;
+  height: auto;
+}
+
+.hero-accent-line {
+  display: none;
+}
+
+/* STATS FIX */
+.hero-stats {
+  position: relative;
+  right: auto;
+  bottom: auto;
+  margin-top: 40px;
+  width: 100%;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.stat {
+  text-align: left;
+  flex: 1 1 30%;
+  min-width: 90px;
+}
+
+.stat-num {
+  font-size: 2.2rem;
+}
+
+.stat-label {
+  font-size: 0.55rem;
+  line-height: 1.4;
+}
+
+/* SECTIONS */
+section {
+  padding: 80px 20px;
+}
+
+.about {
+  grid-template-columns: 1fr;
+  gap: 50px;
+}
+
+.services-grid,
+.reviews-grid,
+.info-section,
+.map-section {
+  grid-template-columns: 1fr;
+}
+
+.info-half,
+.map-content {
+  padding: 60px 20px;
+}
+
+.info-half:first-child {
+  border-right: none;
+  border-bottom: 1px solid rgba(201,168,76,0.1);
+}
+
+.services-header,
+.reviews-header {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+.rating-display {
+  text-align: left;
+}
+
+footer {
+  padding: 40px 20px;
+  flex-direction: column;
+  gap: 20px;
+  text-align: center;
+}
+}
+.hero {
+  min-height: 100svh;
+}
+
+
+@media (min-width: 901px) and (max-width: 1200px) {
+
+.hero {
+  padding: 0 40px 60px;
+}
+
+.hero-visual {
+  width: 45%;
+}
+
+.dumbbell-scene {
+  width: 420px;
+  height: 420px;
+}
+
+.hero-stats {
+  gap: 24px;
+  right: 40px;
+}
+
+.stat-num {
+  font-size: 2.5rem;
+}
+}
+
+
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">BODIES <span>WOF</span></a>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#services">Services</a></li>
+    <li><a href="#hours">Hours</a></li>
+    <li><a href="#reviews">Reviews</a></li>
+    <li><a href="#location">Location</a></li>
+  </ul>
+  <a href="tel:70799798" class="nav-cta">Call Now</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-bg"></div>
+  <div class="hero-noise"></div>
+  <div class="hero-accent-line"></div>
+
+  <div class="hero-visual">
+    <div class="dumbbell-scene">
+      <svg viewBox="0 0 600 600" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#C9A84C" stop-opacity="0.3"/>
+            <stop offset="100%" stop-color="#C9A84C" stop-opacity="0"/>
+          </radialGradient>
+          <linearGradient id="metalGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#3a3020"/>
+            <stop offset="40%" stop-color="#C9A84C"/>
+            <stop offset="60%" stop-color="#8a6c2a"/>
+            <stop offset="100%" stop-color="#2a2015"/>
+          </linearGradient>
+          <linearGradient id="plateGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#1a1a1a"/>
+            <stop offset="50%" stop-color="#3a3a3a"/>
+            <stop offset="100%" stop-color="#0d0d0d"/>
+          </linearGradient>
+        </defs>
+        <!-- Glow -->
+        <ellipse cx="300" cy="300" rx="220" ry="220" fill="url(#glow)" opacity="0.6"/>
+        <!-- Dumbbell bar -->
+        <rect x="100" y="288" width="400" height="24" rx="12" fill="url(#metalGrad)" opacity="0.95"/>
+        <!-- Left weight plates -->
+        <rect x="70" y="230" width="70" height="140" rx="8" fill="url(#plateGrad)" stroke="#C9A84C" stroke-width="1" opacity="0.9"/>
+        <rect x="50" y="245" width="28" height="110" rx="6" fill="url(#plateGrad)" stroke="#C9A84C" stroke-width="0.5" opacity="0.8"/>
+        <!-- Right weight plates -->
+        <rect x="460" y="230" width="70" height="140" rx="8" fill="url(#plateGrad)" stroke="#C9A84C" stroke-width="1" opacity="0.9"/>
+        <rect x="522" y="245" width="28" height="110" rx="6" fill="url(#plateGrad)" stroke="#C9A84C" stroke-width="0.5" opacity="0.8"/>
+        <!-- Center grip -->
+        <rect x="240" y="280" width="120" height="40" rx="6" fill="#C9A84C" opacity="0.15"/>
+        <!-- Knurling lines -->
+        <line x1="248" y1="282" x2="248" y2="318" stroke="#C9A84C" stroke-width="1" opacity="0.3"/>
+        <line x1="258" y1="282" x2="258" y2="318" stroke="#C9A84C" stroke-width="1" opacity="0.3"/>
+        <line x1="268" y1="282" x2="268" y2="318" stroke="#C9A84C" stroke-width="1" opacity="0.3"/>
+        <line x1="278" y1="282" x2="278" y2="318" stroke="#C9A84C" stroke-width="1" opacity="0.3"/>
+        <line x1="322" y1="282" x2="322" y2="318" stroke="#C9A84C" stroke-width="1" opacity="0.3"/>
+        <line x1="332" y1="282" x2="332" y2="318" stroke="#C9A84C" stroke-width="1" opacity="0.3"/>
+        <line x1="342" y1="282" x2="342" y2="318" stroke="#C9A84C" stroke-width="1" opacity="0.3"/>
+        <line x1="352" y1="282" x2="352" y2="318" stroke="#C9A84C" stroke-width="1" opacity="0.3"/>
+        <!-- Weight labels -->
+        <text x="105" y="305" font-family="'Bebas Neue'" font-size="18" fill="#C9A84C" opacity="0.6" text-anchor="middle">45</text>
+        <text x="495" y="305" font-family="'Bebas Neue'" font-size="18" fill="#C9A84C" opacity="0.6" text-anchor="middle">45</text>
+        <!-- Shadow -->
+        <ellipse cx="300" cy="430" rx="160" ry="16" fill="#C9A84C" opacity="0.04"/>
+      </svg>
+    </div>
+  </div>
+
+  <div class="hero-content">
+    <div class="hero-eyebrow">Since 2017 · Wata Aamaret Chalhoub</div>
+    <h1 class="hero-title">
+      BODIES<br>
+      <span class="gold">WORLD</span>
+      OF FITNESS
+    </h1>
+    <p class="hero-sub">Where strength is forged, limits are broken, and champions are made. Lebanon's premier fitness destination.</p>
+    <div class="hero-actions">
+      <a href="tel:70799798" class="btn-primary">Start Today</a>
+      <a href="#about" class="btn-secondary">Discover More <span class="arr">→</span></a>
+    </div>
+  </div>
+
+  <div class="hero-stats">
+    <div class="stat">
+      <div class="stat-num">4.2★</div>
+      <div class="stat-label">Google Rating</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">81+</div>
+      <div class="stat-label">Reviews</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">17H</div>
+      <div class="stat-label">Daily Access</div>
+    </div>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-section">
+  <div class="marquee-track" id="marqueeTrack">
+    <div class="marquee-item">WEIGHTLIFTING <span class="marquee-dot"></span></div>
+    <div class="marquee-item">CARDIO TRAINING <span class="marquee-dot"></span></div>
+    <div class="marquee-item">PERSONAL TRAINING <span class="marquee-dot"></span></div>
+    <div class="marquee-item">FITNESS CLASSES <span class="marquee-dot"></span></div>
+    <div class="marquee-item">LICENSED COACHES <span class="marquee-dot"></span></div>
+    <div class="marquee-item">CLEAN FACILITIES <span class="marquee-dot"></span></div>
+    <div class="marquee-item">WEIGHTLIFTING <span class="marquee-dot"></span></div>
+    <div class="marquee-item">CARDIO TRAINING <span class="marquee-dot"></span></div>
+    <div class="marquee-item">PERSONAL TRAINING <span class="marquee-dot"></span></div>
+    <div class="marquee-item">FITNESS CLASSES <span class="marquee-dot"></span></div>
+    <div class="marquee-item">LICENSED COACHES <span class="marquee-dot"></span></div>
+    <div class="marquee-item">CLEAN FACILITIES <span class="marquee-dot"></span></div>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<section class="about" id="about">
+  <div class="about-visual reveal">
+    <img 
+      src="YOUR_PHOTO_FILENAME.jpg" 
+      alt="Head Coach" 
+      style="width:100%; height:100%; object-fit:cover; object-position:center top; display:block;"
+    />
+    <div class="about-badge">
+      <div class="about-badge-num">7K+</div>
+      <div class="about-badge-text">Instagram Followers</div>
+    </div>
+  </div>
+  <div class="about-content">
+    <div class="section-label reveal">Our Story</div>
+    <h2 class="section-title reveal reveal-delay-1">FORGED<br>IN IRON.</h2>
+    <p class="about-desc reveal reveal-delay-2">
+      Bodies World of Fitness is more than a gym — it's a community built on dedication, professionalism, and results. Located in Wata Aamaret Chalhoub, we've become the region's most trusted fitness destination, guided by @Boudishibli and a fully licensed team of coaches.
+    </p>
+    <div class="about-features reveal reveal-delay-3">
+      <div class="feature-row">
+        <div class="feature-icon">⚡</div>
+        <div class="feature-text">
+          <strong>Fully Equipped Facility</strong>
+          <span>State-of-the-art equipment, always well-maintained and ready</span>
+        </div>
+      </div>
+      <div class="feature-row">
+        <div class="feature-icon">🏅</div>
+        <div class="feature-text">
+          <strong>Licensed & Professional Team</strong>
+          <span>Every coach is certified, knowledgeable, and results-driven</span>
+        </div>
+      </div>
+      <div class="feature-row">
+        <div class="feature-icon">✨</div>
+        <div class="feature-text">
+          <strong>Spotless Hygiene Standards</strong>
+          <span>Facilities kept immaculate — every single day</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section class="services" id="services">
+  <div class="services-header">
+    <div>
+      <div class="section-label reveal">What We Offer</div>
+      <h2 class="section-title reveal reveal-delay-1">OUR<br>PROGRAMS</h2>
+    </div>
+    <a href="tel:70799798" class="btn-primary reveal reveal-delay-2" style="height:fit-content">Get Started</a>
+  </div>
+  <div class="services-grid">
+    <div class="service-card reveal">
+      <div class="service-num">01</div>
+      <div class="service-icon">🏋️</div>
+      <div class="service-name">Weight Training</div>
+      <p class="service-desc">Full free-weights zone and machine circuits for every level — beginner to advanced. Build strength, sculpt your physique.</p>
+    </div>
+    <div class="service-card reveal reveal-delay-1">
+      <div class="service-num">02</div>
+      <div class="service-icon">🏃</div>
+      <div class="service-name">Cardio Zone</div>
+      <p class="service-desc">Modern cardio equipment to elevate your endurance, burn calories, and improve cardiovascular health.</p>
+    </div>
+    <div class="service-card reveal reveal-delay-2">
+      <div class="service-num">03</div>
+      <div class="service-icon">👤</div>
+      <div class="service-name">Personal Training</div>
+      <p class="service-desc">One-on-one sessions tailored to your goals. Our licensed coaches design your perfect program and hold you accountable.</p>
+    </div>
+    <div class="service-card reveal reveal-delay-3">
+      <div class="service-num">04</div>
+      <div class="service-icon">🤸</div>
+      <div class="service-name">Group Classes</div>
+      <p class="service-desc">High-energy fitness classes in a motivating group environment. Strength, HIIT, and more — something for everyone.</p>
+    </div>
+    <div class="service-card reveal reveal-delay-1">
+      <div class="service-num">05</div>
+      <div class="service-icon">📋</div>
+      <div class="service-name">Fitness Assessment</div>
+      <p class="service-desc">Comprehensive body analysis and goal-setting sessions to chart your transformation journey from day one.</p>
+    </div>
+    <div class="service-card reveal reveal-delay-2">
+      <div class="service-num">06</div>
+      <div class="service-icon">🧘</div>
+      <div class="service-name">Wellness & Recovery</div>
+      <p class="service-desc">Recovery-focused guidance, stretching routines, and mobility work to keep your body performing at its peak.</p>
+    </div>
+  </div>
+</section>
+
+<!-- HOURS & CONTACT -->
+<section class="info-section" id="hours">
+  <div class="info-half">
+    <div class="section-label reveal">Opening Hours</div>
+    <h2 class="section-title reveal reveal-delay-1">WE'RE<br>HERE FOR<br>YOU.</h2>
+    <div class="hours-list reveal reveal-delay-2">
+      <div class="hour-row">
+        <span class="hour-day">Monday</span><span class="hour-time">6:00 AM – 11:00 PM</span>
+      </div>
+      <div class="hour-row">
+        <span class="hour-day">Tuesday</span><span class="hour-time">6:00 AM – 11:00 PM</span>
+      </div>
+      <div class="hour-row">
+        <span class="hour-day">Wednesday</span><span class="hour-time">6:00 AM – 11:00 PM</span>
+      </div>
+      <div class="hour-row">
+        <span class="hour-day">Thursday</span><span class="hour-time">6:00 AM – 11:00 PM</span>
+      </div>
+      <div class="hour-row">
+        <span class="hour-day">Friday</span><span class="hour-time">6:00 AM – 11:00 PM</span>
+      </div>
+      <div class="hour-row today">
+        <span class="hour-day">Saturday ← Today</span><span class="hour-time">6:00 AM – 8:00 PM</span>
+      </div>
+      <div class="hour-row">
+        <span class="hour-day">Sunday</span><span class="hour-time">6:00 AM – 11:00 PM</span>
+      </div>
+    </div>
+    <div class="open-badge reveal reveal-delay-3">
+      <div class="open-dot"></div>
+      <span class="open-text">Currently Open</span>
+    </div>
+  </div>
+  <div class="info-half" id="contact">
+    <div class="section-label reveal">Get In Touch</div>
+    <h2 class="section-title reveal reveal-delay-1">REACH<br>OUT.</h2>
+    <div class="contact-items reveal reveal-delay-2">
+      <div class="contact-item">
+        <div class="contact-item-icon">📞</div>
+        <div>
+          <div class="contact-item-label">Phone</div>
+          <div class="contact-item-value"><a href="tel:70799798">70 799 798</a> · <a href="tel:01878725">01 878 725</a></div>
+        </div>
+      </div>
+      <div class="contact-item">
+        <div class="contact-item-icon">📍</div>
+        <div>
+          <div class="contact-item-label">Address</div>
+          <div class="contact-item-value">Al Arz Hospital Street<br>Wata Aamaret Chalhoub, Lebanon</div>
+        </div>
+      </div>
+      <div class="contact-item">
+        <div class="contact-item-icon">📸</div>
+        <div>
+          <div class="contact-item-label">Instagram</div>
+          <div class="contact-item-value"><a href="https://www.instagram.com/bodiesworldoffitness?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="_blank">@bodiesworldoffitness</a></div>
+        </div>
+      </div>
+      <div class="contact-item">
+        <div class="contact-item-icon">⭐</div>
+        <div>
+          <div class="contact-item-label">Google Rating</div>
+          <div class="contact-item-value">4.2 / 5.0 · 81 Reviews</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- REVIEWS -->
+<section class="reviews" id="reviews">
+  <div class="reviews-header">
+    <div>
+      <div class="section-label reveal">Member Voices</div>
+      <h2 class="section-title reveal reveal-delay-1">WHAT THEY<br>SAY.</h2>
+    </div>
+    <div class="rating-display reveal reveal-delay-2">
+      <div class="rating-stars">★★★★☆</div>
+      <div class="rating-big">4.2</div>
+      <div class="rating-count">Based on 81 Reviews</div>
+    </div>
+  </div>
+  <div class="reviews-grid">
+    <div class="review-card reveal">
+      <div class="review-quote">"</div>
+      <p class="review-text">This gym is fantastic! The equipment is well-maintained, the facilities are always clean, and the staff is super friendly and helpful. The trainers are knowledgeable and supportive, creating a great environment for all fitness levels.</p>
+      <div class="review-footer">
+        <div>
+          <div class="reviewer-name">Hussein Ajami</div>
+          <div style="font-size:0.68rem;color:var(--muted);margin-top:4px;">Google Review</div>
+        </div>
+        <div class="reviewer-stars">★★★★★</div>
+      </div>
+    </div>
+    <div class="review-card reveal reveal-delay-1">
+      <div class="review-quote">"</div>
+      <p class="review-text">Fully equipped, trained staff, good vibe and a good place for a workout. Best gym in town — the atmosphere keeps you motivated every single session.</p>
+      <div class="review-footer">
+        <div>
+          <div class="reviewer-name">Ramy Hachem</div>
+          <div style="font-size:0.68rem;color:var(--muted);margin-top:4px;">Local Guide · 62 Reviews</div>
+        </div>
+        <div class="reviewer-stars">★★★★★</div>
+      </div>
+    </div>
+    <div class="review-card reveal reveal-delay-2">
+      <div class="review-quote">"</div>
+      <p class="review-text">Not the biggest gym you'll ever see, but the good hygiene and clean environment more than make up for it. A solid spot with a welcoming community feel.</p>
+      <div class="review-footer">
+        <div>
+          <div class="reviewer-name">Johnny G</div>
+          <div style="font-size:0.68rem;color:var(--muted);margin-top:4px;">Local Guide · 45 Reviews</div>
+        </div>
+        <div class="reviewer-stars">★★★★☆</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MAP + LOCATION CTA -->
+<section class="map-section" id="location" style="padding:0;">
+  <div class="map-content">
+    <div class="section-label reveal">Find Us</div>
+    <h2 class="section-title reveal reveal-delay-1">COME<br>VISIT.</h2>
+    <p class="map-address reveal reveal-delay-2">Al Arz Hospital Street<br>Wata Aamaret Chalhoub, Lebanon</p>
+    <div style="display:flex;gap:16px;flex-wrap:wrap;" class="reveal reveal-delay-3">
+      <a href="https://maps.app.goo.gl/WyYCYG6nsUQC4z9t5" target="_blank" class="btn-primary">Open in Maps</a>
+      <a href="tel:70799798" class="btn-secondary">Call Us <span class="arr">→</span></a>
+    </div>
+  </div>
+  <div class="map-frame">
+    <a href="https://maps.app.goo.gl/WyYCYG6nsUQC4z9t5" target="_blank" class="map-card-link">
+      <svg viewBox="0 0 600 500" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block;">
+        <defs>
+          <linearGradient id="mapBg" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#111108"/>
+            <stop offset="100%" stop-color="#0d0d0d"/>
+          </linearGradient>
+          <radialGradient id="pinGlow" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#C9A84C" stop-opacity="0.4"/>
+            <stop offset="100%" stop-color="#C9A84C" stop-opacity="0"/>
+          </radialGradient>
+        </defs>
+        <rect width="600" height="500" fill="url(#mapBg)"/>
+        <!-- Street grid -->
+        <line x1="0" y1="180" x2="600" y2="180" stroke="#C9A84C" stroke-width="12" stroke-opacity="0.07"/>
+        <line x1="0" y1="320" x2="600" y2="320" stroke="#C9A84C" stroke-width="8" stroke-opacity="0.05"/>
+        <line x1="160" y1="0" x2="160" y2="500" stroke="#C9A84C" stroke-width="8" stroke-opacity="0.05"/>
+        <line x1="380" y1="0" x2="380" y2="500" stroke="#C9A84C" stroke-width="14" stroke-opacity="0.07"/>
+        <line x1="500" y1="0" x2="500" y2="500" stroke="#C9A84C" stroke-width="6" stroke-opacity="0.04"/>
+        <line x1="60" y1="0" x2="60" y2="500" stroke="#C9A84C" stroke-width="6" stroke-opacity="0.04"/>
+        <!-- City blocks -->
+        <rect x="180" y="60" width="180" height="100" rx="4" fill="#C9A84C" opacity="0.04"/>
+        <rect x="400" y="60" width="80" height="100" rx="4" fill="#C9A84C" opacity="0.03"/>
+        <rect x="20" y="200" width="120" height="100" rx="4" fill="#C9A84C" opacity="0.03"/>
+        <rect x="180" y="200" width="180" height="100" rx="4" fill="#C9A84C" opacity="0.04"/>
+        <rect x="400" y="200" width="80" height="100" rx="4" fill="#C9A84C" opacity="0.03"/>
+        <rect x="20" y="340" width="120" height="120" rx="4" fill="#C9A84C" opacity="0.03"/>
+        <rect x="180" y="340" width="180" height="80" rx="4" fill="#C9A84C" opacity="0.04"/>
+        <!-- Pin glow -->
+        <ellipse cx="300" cy="250" rx="90" ry="90" fill="url(#pinGlow)"/>
+        <!-- Pin shadow -->
+        <ellipse cx="300" cy="298" rx="18" ry="6" fill="#000" opacity="0.5"/>
+        <!-- Map pin -->
+        <path d="M300 170 C270 170 248 192 248 222 C248 262 300 298 300 298 C300 298 352 262 352 222 C352 192 330 170 300 170Z" fill="#C9A84C"/>
+        <circle cx="300" cy="222" r="16" fill="#050505"/>
+        <!-- Pulse rings -->
+        <circle cx="300" cy="222" r="50" fill="none" stroke="#C9A84C" stroke-width="1" opacity="0.15" style="animation:pulse-ring 2s ease-out infinite"/>
+        <circle cx="300" cy="222" r="70" fill="none" stroke="#C9A84C" stroke-width="1" opacity="0.08" style="animation:pulse-ring 2s ease-out infinite 0.5s"/>
+        <!-- Label -->
+        <rect x="180" y="306" width="240" height="44" rx="4" fill="#0d0d0d" opacity="0.92"/>
+        <rect x="180" y="306" width="240" height="2" fill="#C9A84C" opacity="0.6"/>
+        <text x="300" y="324" font-family="'Bebas Neue',sans-serif" font-size="13" fill="#C9A84C" text-anchor="middle" letter-spacing="2">BODIES WORLD OF FITNESS</text>
+        <text x="300" y="342" font-family="sans-serif" font-size="9" fill="#7A7260" text-anchor="middle" letter-spacing="1">Wata Aamaret Chalhoub · Lebanon</text>
+        <!-- Open in maps CTA -->
+        <rect x="210" y="378" width="180" height="38" rx="3" fill="#C9A84C"/>
+        <text x="300" y="402" font-family="'Bebas Neue',sans-serif" font-size="14" fill="#050505" text-anchor="middle" letter-spacing="2">OPEN IN GOOGLE MAPS →</text>
+      </svg>
+    </a>
+    <style>
+      .map-card-link { display:block; width:100%; height:100%; text-decoration:none; }
+      .map-card-link:hover svg { filter: brightness(1.1); }
+      @keyframes pulse-ring { 0%{r:50;opacity:0.2} 100%{r:120;opacity:0} }
+    </style>
+    <div class="map-overlay"></div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">BODIES <span>WORLD OF FITNESS</span></div>
+  <div class="footer-copy">© 2025 Bodies World of Fitness · Lebanon</div>
+  <div class="footer-social">
+    <a href="https://www.instagram.com/bodiesworldoffitness?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="_blank" class="social-link" title="Instagram">IG</a>
+    <a href="tel:70799798" class="social-link" title="Call">☎</a>
+    <a href="https://maps.app.goo.gl/WyYCYG6nsUQC4z9t5" target="_blank" class="social-link" title="Map">📍</a>
+  </div>
+</footer>
+
+<script>
+  // Custom cursor
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('cursorRing');
+  let mx = 0, my = 0, rx = 0, ry = 0;
+  document.addEventListener('mousemove', e => {
+    mx = e.clientX; my = e.clientY;
+    cursor.style.transform = `translate(${mx - 5}px, ${my - 5}px)`;
+  });
+  function animateRing() {
+    rx += (mx - rx - 18) * 0.12;
+    ry += (my - ry - 18) * 0.12;
+    ring.style.transform = `translate(${rx}px, ${ry}px)`;
+    requestAnimationFrame(animateRing);
+  }
+  animateRing();
+
+  // Scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); } });
+  }, { threshold: 0.15 });
+  reveals.forEach(el => observer.observe(el));
+
+  // Nav transparency
+  const nav = document.querySelector('nav');
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 80) {
+      nav.style.background = 'rgba(5,5,5,0.97)';
+      nav.style.backdropFilter = 'blur(12px)';
+      nav.style.borderBottom = '1px solid rgba(201,168,76,0.08)';
+    } else {
+      nav.style.background = 'linear-gradient(to bottom, rgba(5,5,5,0.98), transparent)';
+      nav.style.backdropFilter = 'none';
+      nav.style.borderBottom = 'none';
+    }
+  });
+
+  // Duplicate marquee for seamless loop
+  const track = document.getElementById('marqueeTrack');
+  track.innerHTML += track.innerHTML;
+</script>
+</body>
+</html>
