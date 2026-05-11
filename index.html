@@ -923,33 +923,20 @@ footer {
     <div class="section-label reveal">Opening Hours</div>
     <h2 class="section-title reveal reveal-delay-1">WE'RE<br>HERE FOR<br>YOU.</h2>
     <div class="hours-list reveal reveal-delay-2">
-      <div class="hour-row">
-        <span class="hour-day">Monday</span><span class="hour-time">6:00 AM – 11:00 PM</span>
-      </div>
-      <div class="hour-row">
-        <span class="hour-day">Tuesday</span><span class="hour-time">6:00 AM – 11:00 PM</span>
-      </div>
-      <div class="hour-row">
-        <span class="hour-day">Wednesday</span><span class="hour-time">6:00 AM – 11:00 PM</span>
-      </div>
-      <div class="hour-row">
-        <span class="hour-day">Thursday</span><span class="hour-time">6:00 AM – 11:00 PM</span>
-      </div>
-      <div class="hour-row">
-        <span class="hour-day">Friday</span><span class="hour-time">6:00 AM – 11:00 PM</span>
-      </div>
-      <div class="hour-row today">
-        <span class="hour-day">Saturday ← Today</span><span class="hour-time">6:00 AM – 8:00 PM</span>
-      </div>
-      <div class="hour-row">
-        <span class="hour-day">Sunday</span><span class="hour-time">6:00 AM – 11:00 PM</span>
-      </div>
+      <div class="hour-row" id="day-1"><span class="hour-day">Monday</span><span class="hour-time">6:00 AM – 11:00 PM</span></div>
+      <div class="hour-row" id="day-2"><span class="hour-day">Tuesday</span><span class="hour-time">6:00 AM – 11:00 PM</span></div>
+      <div class="hour-row" id="day-3"><span class="hour-day">Wednesday</span><span class="hour-time">6:00 AM – 11:00 PM</span></div>
+      <div class="hour-row" id="day-4"><span class="hour-day">Thursday</span><span class="hour-time">6:00 AM – 11:00 PM</span></div>
+      <div class="hour-row" id="day-5"><span class="hour-day">Friday</span><span class="hour-time">6:00 AM – 11:00 PM</span></div>
+      <div class="hour-row" id="day-6"><span class="hour-day">Saturday</span><span class="hour-time">6:00 AM – 8:00 PM</span></div>
+      <div class="hour-row" id="day-0"><span class="hour-day">Sunday</span><span class="hour-time">6:00 AM – 11:00 PM</span></div>
     </div>
-    <div class="open-badge reveal reveal-delay-3">
-      <div class="open-dot"></div>
-      <span class="open-text">Currently Open</span>
+    <div class="open-badge reveal reveal-delay-3" id="openBadge">
+      <div class="open-dot" id="openDot"></div>
+      <span class="open-text" id="openText">Checking...</span>
     </div>
   </div>
+
   <div class="info-half" id="contact">
     <div class="section-label reveal">Get In Touch</div>
     <h2 class="section-title reveal reveal-delay-1">REACH<br>OUT.</h2>
@@ -1157,6 +1144,55 @@ footer {
   // Duplicate marquee for seamless loop
   const track = document.getElementById('marqueeTrack');
   track.innerHTML += track.innerHTML;
+
+
+  /* ── Live hours & open/closed status ── */
+(function updateHours() {
+  const now = new Date();
+  const day  = now.getDay();   // 0=Sun … 6=Sat
+  const hour = now.getHours() + now.getMinutes() / 60;
+
+  // Opening hours per day: [openHour, closeHour]
+  const schedule = {
+    0: [6, 23],  // Sunday    6am–11pm
+    1: [6, 23],  // Monday    6am–11pm
+    2: [6, 23],  // Tuesday   6am–11pm
+    3: [6, 23],  // Wednesday 6am–11pm
+    4: [6, 23],  // Thursday  6am–11pm
+    5: [6, 23],  // Friday    6am–11pm
+    6: [6, 20],  // Saturday  6am–8pm
+  };
+
+  // Highlight today's row
+  const todayRow = document.getElementById('day-' + day);
+  if (todayRow) {
+    todayRow.classList.add('today');
+    const dayLabel = todayRow.querySelector('.hour-day');
+    if (dayLabel) dayLabel.textContent += ' ← Today';
+  }
+
+  // Check if currently open
+  const [open, close] = schedule[day];
+  const isOpen = hour >= open && hour < close;
+
+  const badge   = document.getElementById('openBadge');
+  const dot     = document.getElementById('openDot');
+  const text    = document.getElementById('openText');
+
+  if (isOpen) {
+    text.textContent = 'Currently Open';
+    dot.style.background = '#4ADE80';
+    badge.style.borderColor = 'rgba(74,222,128,0.3)';
+    badge.style.background  = 'rgba(74,222,128,0.06)';
+    text.style.color = '#4ADE80';
+  } else {
+    text.textContent = 'Currently Closed';
+    dot.style.background = '#f87171';
+    badge.style.borderColor = 'rgba(248,113,113,0.3)';
+    badge.style.background  = 'rgba(248,113,113,0.06)';
+    text.style.color = '#f87171';
+  }
+})();
 </script>
 </body>
 </html>
